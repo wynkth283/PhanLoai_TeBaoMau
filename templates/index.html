@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHÂN LOẠI TẾ BÀO MÁU VỚI MÔ HÌNH VIT + FUZZY</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container p-2">
+        <div class="row">
+            <div class="col-12 sc2">
+                <div class="card card-dark mt-3" style="border-radius:0px">
+                    <div class="card-header">
+                      <p class="mb-0">PHÂN LOẠI TẾ BÀO MÁU VỚI MÔ HÌNH VIT + FUZZY</p>
+                    </div>
+                    <div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Chọn ảnh phân loại</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="imageUpload" accept="image/*">
+                                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                                    </div>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Upload</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-dark" style="border-radius:0px" onclick="predict()">Kiểm tra</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 sc6">
+                <div class="card card-dark mt-3" style="border-radius:0px">
+                    <div class="card-header">
+                        <p class="mb-0">ẢNH GỐC</p>
+                    </div>
+                    <div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center align-items-center" style="min-width: 100px; max-height: 300px">
+                                <img id="anh" src="anhgoc.jpg" width="200">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8 sc7">
+                <div class="card card-dark mt-3" style="border-radius:0px">
+                    <div class="card-header">
+                        <p class="mb-0">ẢNH TRỰC QUAN KẾT QUẢ BẰNG XAI</p>
+                    </div>
+                    <div>
+                        <div class="card-body" id="result">
+                            <div class="d-flex">
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-center align-items-center" style="min-width: 100px; max-height: 300px">
+                                        <img id="gradcamImage" src="" alt="Grad-CAM Image" style="display:none; max-width:100%;">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <p id="prediction"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="display:none">
+            <div class="col-8">
+                <div class="card card-dark mt-3" style="border-radius:0px">
+                    <div class="card-header">
+                        <p class="mb-0">XÁC XUẤT DỰ ĐOÁN GIỮA CÁC LỚP</p>
+                    </div>
+                    <div>
+                        <div class="card-body" id="result">
+                            <img id="probPlot" src="" alt="Probability Plot" style="display:none; max-width:300px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        const image = document.getElementById("anh"),
+        input = document.querySelector(".custom-file-input");
+    
+        input.addEventListener("change", () => {
+            image.src = URL.createObjectURL(input.files[0]);
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sections = document.querySelectorAll(".sc1, .sc2, .sc3, .sc4, .sc5, .sc6, .sc7, .sc8, .sc9, .sc10, .sc11, .sc12, .sc13, .sc14, .sc15, .sc16");
+        
+            const observerOptions = {
+            root: null, // Quan sát trong viewport
+            rootMargin: "0px",
+            threshold: 0.3 // Hiệu ứng kích hoạt khi 30% phần tử nằm trong khung nhìn
+            };
+        
+            const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                // Nếu phần tử được nhìn thấy, thêm lớp visible với độ trễ
+                setTimeout(() => {
+                    entry.target.classList.add("visible");
+                }, index * 250); // Độ trễ 200ms giữa các phần tử
+                } else {
+                // Nếu phần tử rời khỏi vùng nhìn thấy, loại bỏ lớp visible
+                entry.target.classList.remove("visible");
+                }
+            });
+            }, observerOptions);
+        
+            sections.forEach((element) => observer.observe(element));
+        });
+    </script>
+</body>
+</html>
